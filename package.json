@@ -1,0 +1,25 @@
+{
+  "name": "iot-parts-api",
+  "version": "1.0.0",
+  "description": "A lightweight mock REST API built with Express for practicing API testing, automation, and test chaining with Postman and Newman.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "keywords": [
+    "postman",
+    "api-testing",
+    "rest-api",
+    "mock-api",
+    "express",
+    "automation",
+    "newman"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2"
+  }
+}
