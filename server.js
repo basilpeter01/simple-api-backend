@@ -40,10 +40,15 @@ const authenticate = (req, res, next) => {
 
 //ROUTES
 
+//root
+app.get('/', (req, res) => {
+    res.json({ message: "Welcome to the API." });
+});
+
 //status
 app.get('/status', (req, res) => {
     res.json({ status: "OK" });
-})
+});
 
 //register client
 app.post('/api-clients', (req, res) => {
