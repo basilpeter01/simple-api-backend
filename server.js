@@ -55,7 +55,7 @@ app.post('/api-clients', (req, res) => {
     const { clientName, clientEmail } = req.body;
 
     if (!clientName || !clientEmail) {
-        return res.status(400).json({ error: "clientNamr and clientEmail are required" });
+        return res.status(400).json({ error: "clientName and clientEmail are required" });
     }
 
     const exists = clients.some(c => c.clientEmail === clientEmail);
@@ -66,7 +66,7 @@ app.post('/api-clients', (req, res) => {
     const token = crypto.randomBytes(32).toString('hex');
     clients.push({ clientName, clientEmail, token });
 
-    res.status(201).json({ accesstoken: token });
+    res.status(201).json({ accessToken: token });
 
 });
 
