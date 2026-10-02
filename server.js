@@ -107,16 +107,23 @@ app.post('/orders', authenticate, (req, res) => {
     const part = parts.find(p => p.id === parseInt(partId));
     if (!part) return res.status(404).json({ error: "Not found." });
 
+    if (!part.available) {
+        return res.status(404).json({ error: "This part is not in stock." });
+    }
+
     const orderId = crypto.randomUUID();
-    orders.push({ id: orderId, partId, customerName, token: req.userToken });
+    orders.push({ id: orderId, partId: parseInt(partId), customerName, token: req.userToken });
 
     res.status(201).json({ created: true, orderId });
 });
 
 //get all orders of a user
 app.get('/orders', authenticate, (req, res) => {
-    const userOrders = orders.filter(o => o.token === req.userToken);
-    res.json(userOrders)
+    const userOrders = orders
+        .filter(o => o.token === req.userToken)
+        .map(({ token, ...order }) => order);
+
+    res.json(userOrders);
 });
 
 //get single order
@@ -126,7 +133,8 @@ app.get('/orders/:orderId', authenticate, (req, res) => {
     if (!order) {
         return res.status(404).json({ error: "No order with id " + req.params.orderId });
     }
-    res.json(order);
+    const { token, ...orderData } = order;
+    res.json(orderData);
 });
 
 //update order
