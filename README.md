@@ -1,6 +1,6 @@
-# IoT Parts API & Postman Testbed
+# IoT Parts API & Simple Postman Tests
 
-A lightweight Express REST API with an in-memory datastore and Bearer token authentication. I built this specifically as a local target to design, run, and practice API testing with Postman.
+A lightweight Express REST API with an in-memory datastore and Bearer token authentication. Built specifically as a local target to design, run, and practice API testing with Postman.
 
 ## Features
 
