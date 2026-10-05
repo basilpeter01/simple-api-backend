@@ -1,23 +1,58 @@
 const express = require('express');
 const cors = require('cors');
 const crypto = require('crypto');
+const fs = require('fs/promises');
+const path = require('path');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-//MOCK DATA
-const parts = [
-    { id: 1, name: "ESP32", type: "controller", available: true },
-    { id: 2, name: "PIR Sensor", type: "sensor", available: true },
-    { id: 3, name: "LDR Module", type: "sensor", available: true },
-    { id: 4, name: "Raspberry Pi", type: "controller", available: false },
-    { id: 5, name: "Arduino uno", type: "controller", available: true },
+// PERSISTENT DATA HELPERS
+const DATA_DIR = path.join(__dirname, 'data');
+const PARTS_FILE = path.join(DATA_DIR, 'parts.json');
+const CLIENTS_FILE = path.join(DATA_DIR, 'clients.json');
+const ORDERS_FILE = path.join(DATA_DIR, 'orders.json');
 
-];
+async function loadData(filePath, defaultData = []) {
+    try {
+        const data = await fs.readFile(filePath, 'utf-8');
+        return JSON.parse(data);
+    } catch (err) {
+        if (err.code === 'ENOENT') {
+            await fs.mkdir(DATA_DIR, { recursive: true });
+            await fs.writeFile(filePath, JSON.stringify(defaultData, null, 2));
+            return defaultData;
+        }
+        console.error(`Error reading ${filePath}:`, err);
+        return defaultData;
+    }
+}
 
+async function saveData(filePath, data) {
+    try {
+        await fs.writeFile(filePath, JSON.stringify(data, null, 2));
+    } catch (err) {
+        console.error(`Error writing to ${filePath}:`, err);
+    }
+}
+
+let parts = [];
 let clients = [];
 let orders = [];
+
+// Initialize data
+async function initData() {
+    parts = await loadData(PARTS_FILE, [
+        { id: 1, name: "ESP32", type: "controller", available: true },
+        { id: 2, name: "PIR Sensor", type: "sensor", available: true },
+        { id: 3, name: "LDR Module", type: "sensor", available: true },
+        { id: 4, name: "Raspberry Pi", type: "controller", available: false },
+        { id: 5, name: "Arduino uno", type: "controller", available: true },
+    ]);
+    clients = await loadData(CLIENTS_FILE, []);
+    orders = await loadData(ORDERS_FILE, []);
+}
 
 //AUTH MIDDLEWARE
 const authenticate = (req, res, next) => {
