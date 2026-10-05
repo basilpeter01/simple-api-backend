@@ -100,6 +100,7 @@ app.post('/api-clients', (req, res) => {
 
     const token = crypto.randomBytes(32).toString('hex');
     clients.push({ clientName, clientEmail, token });
+    saveData(CLIENTS_FILE, clients);
 
     res.status(201).json({ accessToken: token });
 
@@ -148,6 +149,7 @@ app.post('/orders', authenticate, (req, res) => {
 
     const orderId = crypto.randomUUID();
     orders.push({ id: orderId, partId: parseInt(partId), customerName, token: req.userToken });
+    saveData(ORDERS_FILE, orders);
 
     res.status(201).json({ created: true, orderId });
 });
@@ -181,6 +183,7 @@ app.patch('/orders/:orderId', authenticate, (req, res) => {
     if (!customerName) return res.status(400).json({ error: "CustomerName is required" });
 
     order.customerName = customerName;
+    saveData(ORDERS_FILE, orders);
     res.sendStatus(204);
 });
 
@@ -192,9 +195,12 @@ app.delete('/orders/:orderId', authenticate, (req, res) => {
     }
 
     orders.splice(index, 1);
+    saveData(ORDERS_FILE, orders);
     res.sendStatus(204);
 });
 
 
 const PORT = 3000;
-app.listen(PORT, () => console.log(`backend running on http://localhost:${PORT}`));
+initData().then(() => {
+    app.listen(PORT, () => console.log(`backend running on http://localhost:${PORT}`));
+});
